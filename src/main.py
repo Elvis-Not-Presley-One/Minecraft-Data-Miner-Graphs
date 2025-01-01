@@ -1,3 +1,4 @@
+import csv
 
 import pandas as pd
 import numpy as np
@@ -16,6 +17,8 @@ import plotly.graph_objs as go
 from ThreeDGraphs import ThreeDGraphs
 from TwoDGraphs import TwoDGraphs
 from Util import Util
+import json
+from charset_normalizer import from_path
 
 
 def getBannerData(filename):
@@ -41,16 +44,31 @@ def getBannerData(filename):
     return banner_x_cord, banner_y_cord, banner_z_cord, banner_names, banner_color, banner_pat, banner_names.unique()
 
 
+
+def get_Sign_data(filename):
+    # *NOTE Pandas is fucking up x y z cords
+    try:
+        df = pd.read_csv(filename, header= None, on_bad_lines='skip', delimiter=',')
+        print(df.head(10))  # Preview first few rows
+        df.info()
+        print(df.iloc[10])
+    except Exception as e:
+        print(f"Error: {e}")
+
 def main():
     """
     This is the main
     """
-    filename = 'FilesBanners.csv'
+    filename_banners = 'FilesBanners.csv'
+    filename_signs = 'FilesSignsV2.csv'
 
+
+    get_Sign_data(filename_signs)
+    """
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(filename)
+     banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(filename_banners)
 
-    utils = Util(filename, banner_names_list)
+    utils = Util(filename_banners, banner_names_list)
     banner_data, banner_keys = utils.unique_word_counter()
 
     twoDGraph = TwoDGraphs(banner_data, banner_keys)
@@ -58,7 +76,7 @@ def main():
     twoDGraph.Create_Bar_Charts()
     twoDGraph.create_Percent_Pie_Chart()
 
-
+"""
 if __name__ == "__main__":
     main()
 

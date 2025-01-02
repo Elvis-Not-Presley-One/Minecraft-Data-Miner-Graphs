@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from PIL.ImageOps import scale
 from docutils.nodes import title
+from docutils.utils.punctuation_chars import delimiters
 from holoviews.plotting.bokeh.styles import marker
 from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 from sympy import rotations
@@ -19,6 +20,7 @@ from TwoDGraphs import TwoDGraphs
 from Util import Util
 import json
 from charset_normalizer import from_path
+from tabulate import tabulate
 
 
 def getBannerData(filename):
@@ -33,6 +35,7 @@ def getBannerData(filename):
     data = pd.read_csv(filename, on_bad_lines='skip')
 
     # user needs to put in own col info in the [] (Needs exact spacing!)
+    # in the future just add a header of use Header=False
     banner_x_cord = data['-514'].array
     banner_y_cord = data['140'].array
     banner_z_cord = data['-13414'].array
@@ -49,6 +52,7 @@ def get_Sign_data(filename):
     # *NOTE Pandas is fucking up x y z cords
     # nvm found the issue
 
+    # create pandas dataframe
     try:
         df = pd.read_csv(filename, header= None, on_bad_lines='skip', delimiter=',', dtype='string')
         print(df.head(10))  # Preview first few rows
@@ -67,7 +71,6 @@ def get_Sign_data(filename):
         df.replace(r'[\\]', '', inplace=True, regex=True)
         df.replace('list:[""""]', '', inplace=True, regex=True)
         df.replace(r'{\"type":"CompoundTag"', '', inplace=True, regex=True)
-        #df.replace(r'list:\[\"\{\"extra":\["(.*?)"\]', '', inplace=True, regex=True)
         df.replace(r'{\"type":"ByteTag"', '', inplace=True, regex=True)
         df.replace(r'{\"type":"StringTag"', '', inplace=True, regex=True)
         df.replace(r'}\}\}', '', inplace=True, regex=True)
@@ -75,10 +78,36 @@ def get_Sign_data(filename):
         df.replace(r'list:[\""""]', '', inplace=True, regex=True)
         df.replace(r'}', '', inplace=True, regex=True)
         df.replace(r'list:[\"{\"extra":]', '', inplace=True, regex=True)
+        df.replace('list:', '', inplace=True, regex=True)
+        df.replace('""""', '', inplace=True, regex=True)
+        df.replace(r'\[', '', inplace=True, regex=True)
+        df.replace(r'\]', '', inplace=True, regex=True)
+        df.replace(r'"{\"extra":', '', inplace=True, regex=True)
+
+        """
+        msg_list = []
+
+        # Get all the msgs from the signs
+        for k in range(len(df[0].array)):
+            single_msg_list = []
+            for i in range(5, 10, 2):
+                if i == 9:
+                    i += 1
+                single_msg_list.append(df.iloc[k, i])
+            msg_list.append(single_msg_list)
+        """
 
 
+        # NOTE 32 col can remove everything from there
+        # Note need to clean up the file even more
+        # remove all white space ect.
 
-        print(df.iloc[10])
+        x_cord = df[0]
+        y_cord = df[1]
+        z_cord = df[2]
+
+        df.to_html('asss.html')
+
     except Exception as e:
         print(f"Error: {e}")
 

@@ -22,6 +22,7 @@ class TwoDGraphs:
         :return: Nothing
         """
 
+        #create a util obk
         utils = Util('', self.__keys, self.__data)
         total = utils.get_Total()
 
@@ -29,6 +30,7 @@ class TwoDGraphs:
         non_big_percent = []
         sums = 0
 
+        #find the percent of each banner
         for item in self.__data:
             percent = (item / total) * 100
             if percent >= 10.00:
@@ -67,31 +69,37 @@ class TwoDGraphs:
         print(dic_keys)
         print(dic_values)
         # For log Scaled Data
-        colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan']
+        try:
+            colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan']
 
-        plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
-        plt.yscale('log')
-        plt.ylabel('Amount of Banners in Log Scale')
-        plt.xlabel('Different Banners')
-        plt.title('All of 2b2t"s Banners in 25k 25k end')
-        plt.xticks(rotation=45, ha='right', size=5)
-        plt.tight_layout()
-        plt.show()
+            plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
+            plt.yscale('log')
+            plt.ylabel('Amount of Banners in Log Scale')
+            plt.xlabel('Different Banners')
+            plt.title('All of 2b2t"s Banners in 25k 25k end')
+            plt.xticks(rotation=45, ha='right', size=5)
+            plt.tight_layout()
+            plt.show()
+        except Exception as e:
+            raise RuntimeError(f"Error Creating scaled bar graph {e}")
 
-        # For non log scaled data bar chart
-        plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
-        plt.ylabel('Amount of Banners in With No Scale')
-        plt.xlabel('Different Banners')
-        plt.title('All of 2b2t"s Banners in 25k 25k end')
-        plt.xticks(rotation=45, ha='right', size=5)
-        plt.tight_layout()
-        plt.show()
+        try:
+            # For non log scaled data bar chart
+            plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
+            plt.ylabel('Amount of Banners in With No Scale')
+            plt.xlabel('Different Banners')
+            plt.title('All of 2b2t"s Banners in 25k 25k end')
+            plt.xticks(rotation=45, ha='right', size=5)
+            plt.tight_layout()
+            plt.show()
 
-        dicts = {'Banner Name': dic_keys,
-                 'Amount of Banners': self.__data}
+            dicts = {'Banner Name': dic_keys,
+                     'Amount of Banners': self.__data}
 
-        df = pd.DataFrame(dicts)
-        display(df)
+            df = pd.DataFrame(dicts)
+            display(df)
+        except Exception as e:
+            raise RuntimeError(f"Error in creating non-log bar graph {e}")
 
         return dic_keys, self.__data, dic_values
 

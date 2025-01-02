@@ -21,6 +21,7 @@ class Util:
         :return: the total sum *NOTE int/float
         """
 
+        #finds the sum, could use sum() to clean it up, but thats not how I was tought py
         sums = 0
         for item in self.__data:
             sums += item
@@ -41,6 +42,7 @@ class Util:
             else:
                 unique_words[words] = 1
 
+        # outputs the keys and values associated with them
         return unique_words.values(), unique_words.keys()
 
     def display_Info(self):
@@ -49,6 +51,7 @@ class Util:
         :return: Nothing but useful print statements
         """
 
+        # basic info you might want to look at before doing stuff to the df
         pd.set_option('display.max_rows', None)
         data = pd.read_csv(self.__filename, on_bad_lines='skip')
         print(data.head())

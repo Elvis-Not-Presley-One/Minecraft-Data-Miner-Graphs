@@ -26,6 +26,8 @@ class ThreeDGraphs:
             self.__unique_names = unique_names
 
             self.__fig = go.Figure()
+
+            # hideous peace of code for the hover text but I need to do it this way or I cant have it split up
             self.__hover_text = [
                 (f"Name: {self.__name[i]}<br>X: {self.__x[i]}<br>Y: {self.__y[i]}<br>Z: {self.__z[i]}<br>Color:,"
                  f" {self.__color[i]}<br>Pat: {self.__pat[i]}")
@@ -45,7 +47,7 @@ class ThreeDGraphs:
             y = self.__y
             z = self.__z
 
-
+            # creates title marker type color and text with a scale
             self.__fig = go.Figure(data=[go.Scatter3d(
                 x=x,
                 y=z,
@@ -73,6 +75,7 @@ class ThreeDGraphs:
         the add_drop_downs function adds all the drop-down menus and also they styling
         :return: notiing
         """
+        # creates an automatic args to be able to filter out info basically creating traces
         try:
             filter_buttons = [
                 dict(
@@ -102,6 +105,7 @@ class ThreeDGraphs:
 
             ))
 
+            # create a drop down with the button name and what it does
             buttons_types = [
                 dict(
                     args=['type', 'scatter3d'],
@@ -125,6 +129,7 @@ class ThreeDGraphs:
                 )
             ]
 
+            # makes buttons do shit, and can style them here
             self.__fig.update_layout(
                 template='plotly_dark',
                 updatemenus=[
@@ -153,6 +158,7 @@ class ThreeDGraphs:
                     ),
                 ],
 
+                # make text for the buttons to the side of them
                 annotations=[
                     dict(text="Plot Types:", showarrow=False,
                          x=0.024, y=1.13, yref="paper", align="left"),

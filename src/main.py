@@ -15,6 +15,8 @@ from IPython.display import display
 from matplotlib.patches import ConnectionPatch
 import plotly.express as px
 import plotly.graph_objs as go
+from xarray.util.generate_ops import inplace
+
 from ThreeDGraphs import ThreeDGraphs
 from TwoDGraphs import TwoDGraphs
 from Util import Util
@@ -84,21 +86,8 @@ def get_Sign_data(filename):
         df.replace(r'\]', '', inplace=True, regex=True)
         df.replace(r'"{\"extra":', '', inplace=True, regex=True)
 
-        """
-        msg_list = []
+        df = df.iloc[:, :32]
 
-        # Get all the msgs from the signs
-        for k in range(len(df[0].array)):
-            single_msg_list = []
-            for i in range(5, 10, 2):
-                if i == 9:
-                    i += 1
-                single_msg_list.append(df.iloc[k, i])
-            msg_list.append(single_msg_list)
-        """
-
-
-        # NOTE 32 col can remove everything from there
         # Note need to clean up the file even more
         # remove all white space ect.
 
@@ -106,7 +95,63 @@ def get_Sign_data(filename):
         y_cord = df[1]
         z_cord = df[2]
 
-        df.to_html('asss.html')
+        glow_ink = []
+        messages = []
+        ink_color= []
+        for _, row in df.iterrows():
+
+            row_messages = []
+            glow_ink_row = []
+            ink_color_row = []
+            seen_messages = set()
+
+            for col in range(3, len(row)):
+                cell = str(row[col])
+                if (not cell.startswith("has_glowing_text:") and not cell.startswith("color:")
+                        and not cell.startswith('value:') and not cell.startswith('<NA>') and cell != 'nan'):
+                    cleaned_message = cell.strip('"').strip()
+                    if cleaned_message not in seen_messages:
+                        row_messages.append(cleaned_message)
+                        seen_messages.add(cleaned_message)
+
+                # get the glow ink text 0 false 1 for true
+                if cell.startswith("has_glowing_text:"):
+                    combined_glow_ink = cell
+                    if col + 1 < len(row):
+                        next_cell = str(row[col + 1]).strip()
+                        if next_cell.startswith("value:"):
+                            combined_glow_ink += f" {next_cell}"
+                    glow_ink_row.append(combined_glow_ink)
+
+                # get the colors of the signs
+                if cell.startswith("color:"):
+                    combined_color = cell
+                    if col + 1 < len(row):
+                        next_cell = str(row[col + 1]).strip()
+                        if next_cell.startswith("value:"):
+                            combined_color += f" {next_cell}"
+                    ink_color_row.append(combined_color)
+
+
+            ink_color.append(" ".join(ink_color_row))  # Combine messages for the row
+            glow_ink.append(" ".join(glow_ink_row))
+            messages.append(" ".join(row_messages))  # Combine messages for the row
+
+
+
+
+        cleaned_data = {
+            "x": x_cord,
+            "y": y_cord,
+            "z": z_cord,
+            "mgs": messages,
+            "Glow Ink": glow_ink,
+            "Sign Color": ink_color
+        }
+
+        new_df = pd.DataFrame(cleaned_data)
+        new_df.to_html("Cleaned Sign Data.html")
+
 
     except Exception as e:
         print(f"Error: {e}")

@@ -47,10 +47,37 @@ def getBannerData(filename):
 
 def get_Sign_data(filename):
     # *NOTE Pandas is fucking up x y z cords
+    # nvm found the issue
+
     try:
-        df = pd.read_csv(filename, header= None, on_bad_lines='skip', delimiter=',')
+        df = pd.read_csv(filename, header= None, on_bad_lines='skip', delimiter=',', dtype='string')
         print(df.head(10))  # Preview first few rows
         df.info()
+        df.astype(str)
+
+
+        # took too many fucking hrs to figure this out
+        df.replace('{"type":"ListTag"', '', inplace=True, regex=True)
+        df.replace(r'\\"text\\":\\"\\\"\}"', '', inplace=True, regex=True)
+        df.replace('value:{"type":"StringTag"', '', inplace=True, regex=True)
+        df.replace(r'\\\\""', '', inplace=True, regex=True)
+        df.replace(r']\}\}', '', inplace=True, regex=True)
+        df.replace(r'list:\\', '', inplace=True, regex=True)
+        df.replace(r'{\\extra\\":', '', inplace=True, regex=True)
+        df.replace(r'[\\]', '', inplace=True, regex=True)
+        df.replace('list:[""""]', '', inplace=True, regex=True)
+        df.replace(r'{\"type":"CompoundTag"', '', inplace=True, regex=True)
+        #df.replace(r'list:\[\"\{\"extra":\["(.*?)"\]', '', inplace=True, regex=True)
+        df.replace(r'{\"type":"ByteTag"', '', inplace=True, regex=True)
+        df.replace(r'{\"type":"StringTag"', '', inplace=True, regex=True)
+        df.replace(r'}\}\}', '', inplace=True, regex=True)
+        df.replace(r'value:{\"messages":', '', inplace=True, regex=True)
+        df.replace(r'list:[\""""]', '', inplace=True, regex=True)
+        df.replace(r'}', '', inplace=True, regex=True)
+        df.replace(r'list:[\"{\"extra":]', '', inplace=True, regex=True)
+
+
+
         print(df.iloc[10])
     except Exception as e:
         print(f"Error: {e}")

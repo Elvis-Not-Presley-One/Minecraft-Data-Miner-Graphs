@@ -3,7 +3,7 @@ import plotly.graph_objs as go
 
 class ThreeDGraphs:
 
-    def __init__(self, x_cord, y_cord, z_cord, name, color, pat, unique_names):
+    def __init__(self, x_cord, y_cord, z_cord, name, a_color, pat, unique_names, unique_glow=None, unique_color=None, banners = False):
         """
         This is the constructor for the ThreeDGraphs class, initialized all attributes,
         and creates the base figure that will be added onto later on
@@ -21,18 +21,30 @@ class ThreeDGraphs:
             self.__y = y_cord
             self.__z = z_cord
             self.__name = name
-            self.__color = color
+            self.__color = a_color
             self.__pat = pat
             self.__unique_names = unique_names
+            self.__unique_glow = unique_glow
+            self.__unique_color = unique_color
 
             self.__fig = go.Figure()
 
             # hideous peace of code for the hover text but I need to do it this way or I cant have it split up
-            self.__hover_text = [
-                (f"Name: {self.__name[i]}<br>X: {self.__x[i]}<br>Y: {self.__y[i]}<br>Z: {self.__z[i]}<br>Color:,"
-                 f" {self.__color[i]}<br>Pat: {self.__pat[i]}")
-                for i in range(len(self.__x))
-            ]
+
+            #Note Need to Put a bool value here for the dirrence between signs and banners\
+            if not banners:
+                self.__hover_text = [
+                    (f"Msg: {self.__name[i]}<br>X: {self.__x[i]}<br>Y: {self.__y[i]}<br>Z: {self.__z[i]}<br>Glow Ink:,"
+                     f" {self.__color[i]}<br>Sign Color: {self.__pat[i]}")
+                    for i in range(len(self.__x))
+                ]
+            else:
+                self.__hover_text = [
+                    (f"Name: {self.__name[i]}<br>X: {self.__x[i]}<br>Y: {self.__y[i]}<br>Z: {self.__z[i]}<br>Color:,"
+                     f" {self.__color[i]}<br>Pat: {self.__pat[i]}")
+                    for i in range(len(self.__x))
+                ]
+
         except Exception as e:
             raise RuntimeError(f"Error initializing 3d Grpahs: {e}")
 
@@ -57,7 +69,7 @@ class ThreeDGraphs:
                 hoverinfo="text",
                 marker=dict(
                     size=8,
-                    color=y,
+                    color= y,
                     colorscale='rdbu',
                     opacity=0.8,
                     showscale=True,
@@ -104,6 +116,8 @@ class ThreeDGraphs:
                 method='update'
 
             ))
+
+
 
             # create a drop down with the button name and what it does
             buttons_types = [
@@ -156,6 +170,7 @@ class ThreeDGraphs:
                         name='Filters'
 
                     ),
+
                 ],
 
                 # make text for the buttons to the side of them

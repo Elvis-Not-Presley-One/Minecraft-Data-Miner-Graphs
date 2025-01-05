@@ -45,6 +45,9 @@ def getBannerData(filename):
     banner_color = data['White'].array
     banner_pat = data['Top Triangle '].array
 
+    data.to_html('Banners.html')
+
+    print(banner_y_cord)
 
     return banner_x_cord, banner_y_cord, banner_z_cord, banner_names, banner_color, banner_pat, banner_names.unique()
 
@@ -86,11 +89,13 @@ def get_Sign_data(filename):
         df.replace(r'\]', '', inplace=True, regex=True)
         df.replace(r'"{\"extra":', '', inplace=True, regex=True)
 
+        # remove the last rows 32 onward since it repeats data and does not have anything of meaning
         df = df.iloc[:, :32]
 
         # Note need to clean up the file even more
         # remove all white space ect.
 
+        # get x y z from the original data frame
         x_cord = df[0]
         y_cord = df[1]
         z_cord = df[2]
@@ -107,6 +112,8 @@ def get_Sign_data(filename):
 
             for col in range(3, len(row)):
                 cell = str(row[col])
+
+                # if the cell does not start with any of the other cells it must be a msg, get the info
                 if (not cell.startswith("has_glowing_text:") and not cell.startswith("color:")
                         and not cell.startswith('value:') and not cell.startswith('<NA>') and cell != 'nan'):
                     cleaned_message = cell.strip('"').strip()
@@ -132,14 +139,14 @@ def get_Sign_data(filename):
                             combined_color += f" {next_cell}"
                     ink_color_row.append(combined_color)
 
-
-            ink_color.append(" ".join(ink_color_row))  # Combine messages for the row
+            # combine and remove "" from the cells into one multi dem array
+            ink_color.append(" ".join(ink_color_row))
             glow_ink.append(" ".join(glow_ink_row))
-            messages.append(" ".join(row_messages))  # Combine messages for the row
+            messages.append(" ".join(row_messages))
 
 
 
-
+        #creating a dic for the new data frame
         cleaned_data = {
             "x": x_cord,
             "y": y_cord,
@@ -149,12 +156,25 @@ def get_Sign_data(filename):
             "Sign Color": ink_color
         }
 
-        new_df = pd.DataFrame(cleaned_data)
+        # creates a new data frame to make everything nice and org
+        new_df = pd.DataFrame(cleaned_data, dtype='string')
         new_df.to_html("Cleaned Sign Data.html")
 
 
+        x = new_df['x']
+        y = new_df['y']
+        z = new_df['z']
+        msg = new_df['mgs']
+        glow = new_df['Glow Ink']
+        color = new_df['Sign Color']
+
+        new_df.info()
     except Exception as e:
         print(f"Error: {e}")
+        return None, None, None, None, None, None, None
+
+    return x.astype(int), y.astype(int), z.astype(int), msg, glow, color, msg.unique(), glow.unique(), color.unique()
+
 
 def main():
     """
@@ -164,7 +184,20 @@ def main():
     filename_signs = 'FilesSignsV2.csv'
 
 
-    get_Sign_data(filename_signs)
+    sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(filename_signs)
+
+    sign_utils = Util(filename_signs, msg)
+
+    sign_data, sign_keys = sign_utils.unique_word_counter()
+
+    sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color)
+
+    sign_threeD_Graph.scatter_Plot()
+    sign_threeD_Graph.add_Drop_Downs()
+    sign_threeD_Graph.show()
+    sign_threeD_Graph.html('3d_Sign_plot.html')
+
+
     """
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
      banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(filename_banners)

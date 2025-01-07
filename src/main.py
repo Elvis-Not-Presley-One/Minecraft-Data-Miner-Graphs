@@ -1,5 +1,5 @@
 import csv
-
+import sqlite3
 import pandas as pd
 import numpy as np
 import os
@@ -45,13 +45,11 @@ def getBannerData(filename):
     banner_color = data['White'].array
     banner_pat = data['Top Triangle '].array
 
-    data.to_html('Banners.html')
+    #data.to_html('Banners.html')
 
     print(banner_y_cord)
 
     return banner_x_cord, banner_y_cord, banner_z_cord, banner_names, banner_color, banner_pat, banner_names.unique()
-
-
 
 def get_Sign_data(filename):
     # *NOTE Pandas is fucking up x y z cords
@@ -182,6 +180,7 @@ def main():
     """
     filename_banners = 'FilesBanners.csv'
     filename_signs = 'FilesSignsV2.csv'
+    filename_Biome = 'FilesBiomes.csv'
 
 
     sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(filename_signs)
@@ -190,12 +189,22 @@ def main():
 
     sign_data, sign_keys = sign_utils.unique_word_counter()
 
-    sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color)
+    #sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color)
 
-    sign_threeD_Graph.scatter_Plot()
-    sign_threeD_Graph.add_Drop_Downs()
-    sign_threeD_Graph.show()
-    sign_threeD_Graph.html('3d_Sign_plot.html')
+    #sign_threeD_Graph.scatter_Plot()
+    #sign_threeD_Graph.add_Drop_Downs()
+    #sign_threeD_Graph.show()
+    #sign_threeD_Graph.html('3d_Sign_plot.html')
+
+    title = 'All Signs In 2b End 25k'
+    yLabel = 'Amount of Signs'
+    xLabel = 'Name of Sign'
+    overall = ['The Rest', 'Empty Sign']
+
+    #signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
+    #signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
+    #signs_2dGraph.create_Percent_Pie_Chart(overall)
+
 
 
     """

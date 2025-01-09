@@ -123,7 +123,7 @@ class TwoDGraphs:
             z = self.__y
 
             # creates title marker type color and text with a scale
-            self.__fig = go.Figure(data=[go.Scatter2d(
+            self.__fig = go.Figure(data=[go.Scatter(
                 x=x,
                 z=z,
                 mode='markers',

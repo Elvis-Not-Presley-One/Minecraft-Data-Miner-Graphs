@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 
 class TwoDGraphs:
 
-    def __init__(self, list_of_data, keys, x_cord, y_cord, name, unique_name):
+    def __init__(self, list_of_data, keys, x_cord=None, y_cord=None, name=None, unique_name=None):
         """
         this is the con for the TwoDGraphs class
 
@@ -23,11 +23,12 @@ class TwoDGraphs:
         self.__name = name
         self.__unique = unique_name
 
-        self.__hover_text = [
-            (f"<br>X:{self.__x[i]}<br>Z: {self.__y[i]}<br>Biome:,"
-             f" {self.__name[i]}")
-            for i in range(len(self.__x))
-        ]
+        if self.__x is not None:
+            self.__hover_text = [
+                (f"<br>X:{self.__x[i]}<br>Z: {self.__y[i]}<br>Biome:,"
+                 f" {self.__name[i]}")
+                for i in range(len(self.__x))
+            ]
 
         self.__fig = go.Figure()
 

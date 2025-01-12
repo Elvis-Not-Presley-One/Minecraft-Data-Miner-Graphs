@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 
 class ThreeDGraphs:
 
-    def __init__(self, x_cord, y_cord, z_cord, name, a_color, pat, unique_names, banners=False):
+    def __init__(self, x_cord, y_cord, z_cord, name, a_color, pat, unique_names, banners=False, large_DataSet=False):
         self.__x, self.__y, self.__z = x_cord, y_cord, z_cord
         self.__name, self.__color, self.__pat = name, a_color, pat
         self.__unique_names = unique_names
@@ -12,21 +12,24 @@ class ThreeDGraphs:
         self.__hover_text = self.__generate_hover_text(banners)
         self.__fig = go.Figure()
 
-        self.__filtered_data = {
-            unique_name: {
-                'x': [self.__x[i] for i, name in enumerate(self.__name) if name == unique_name],
-                'y': [self.__z[i] for i, name in enumerate(self.__name) if name == unique_name],
-                'z': [self.__y[i] for i, name in enumerate(self.__name) if name == unique_name],
-                'text': [self.__hover_text[i] for i, name in enumerate(self.__name) if name == unique_name]
+        if not large_DataSet:
+            self.__filtered_data = {
+                unique_name: {
+                    'x': [self.__x[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'y': [self.__z[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'z': [self.__y[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'text': [self.__hover_text[i] for i, name in enumerate(self.__name) if name == unique_name]
+                }
+                for unique_name in self.__unique_names
             }
-            for unique_name in self.__unique_names
-        }
-        self.__filtered_data['all'] = {
-            'x': self.__x,
-            'y': self.__z,
-            'z': self.__y,
-            'text': self.__hover_text
-        }
+            self.__filtered_data['all'] = {
+                'x': self.__x,
+                'y': self.__z,
+                'z': self.__y,
+                'text': self.__hover_text
+            }
+        else:
+            self.__filtered_data = {'all': {}}
 
     def __generate_hover_text(self, banners):
         hover_template = (
@@ -59,35 +62,52 @@ class ThreeDGraphs:
                 )
             )])
 
-            print("filter buttons begin ")
-            filter_buttons = [
-                dict(
+            print("filter buttons begin")
+
+            # Add filter buttons only if not a large dataset
+            updatemenus = []
+            if self.__filtered_data.get('all'):
+                filter_buttons = [
+                    dict(
+                        args=[{
+                            'x': [self.__filtered_data[unique_name]['x']],
+                            'y': [self.__filtered_data[unique_name]['y']],
+                            'z': [self.__filtered_data[unique_name]['z']],
+                            'text': [self.__filtered_data[unique_name]['text']]
+                        }],
+                        label=unique_name,
+                        method="update"
+                    )
+                    for unique_name in self.__unique_names
+                ]
+
+                filter_buttons.insert(0, dict(
                     args=[{
-                        'x': [self.__filtered_data[unique_name]['x']],
-                        'y': [self.__filtered_data[unique_name]['y']],
-                        'z': [self.__filtered_data[unique_name]['z']],
-                        'text': [self.__filtered_data[unique_name]['text']]
+                        'x': [self.__filtered_data['all']['x']],
+                        'y': [self.__filtered_data['all']['y']],
+                        'z': [self.__filtered_data['all']['z']],
+                        'text': [self.__filtered_data['all']['text']]
                     }],
-                    label=unique_name,
-                    method="update"
+                    label='all',
+                    method='update'
+                ))
+
+                print("Filter Buttons Inserted")
+
+                updatemenus.append(
+                    dict(
+                        buttons=filter_buttons,
+                        direction='down',
+                        pad={'r': 10, 't': 10},
+                        showactive=True,
+                        x=0.5,
+                        xanchor='left',
+                        y=1.15,
+                        yanchor='top',
+                        name='Filters'
+                    )
                 )
-                for unique_name in self.__unique_names
-            ]
 
-            filter_buttons.insert(0, dict(
-                args=[{
-                    'x': [self.__filtered_data['all']['x']],
-                    'y': [self.__filtered_data['all']['y']],
-                    'z': [self.__filtered_data['all']['z']],
-                    'text': [self.__filtered_data['all']['text']]
-                }],
-                label='all',
-                method='update'
-            ))
-
-            print("Filter Buttons Inserted")
-
-            # create a drop down with the button name and what it does
             print("Start adding buttons to the Graph")
             buttons_types = [
                 dict(
@@ -112,45 +132,45 @@ class ThreeDGraphs:
                 )
             ]
 
-            # makes buttons do shit, and can style them here
+            updatemenus.append(
+                dict(
+                    buttons=buttons_types,
+                    direction='down',
+                    pad={'r': 10, 't': 10},
+                    showactive=True,
+                    x=0.1,
+                    xanchor='left',
+                    y=1.15,
+                    yanchor='top',
+                    name='Plot Type: '
+                )
+            )
+
+            annotations = [
+                dict(text="Plot Types:",
+                     showarrow=False,
+                     x=0.024,
+                     y=1.13,
+                     yref="paper",
+                     align="left")
+            ]
+
+            if self.__filtered_data.get('all'):
+                annotations.append(
+                    dict(text='Filters:',
+                         showarrow=False,
+                         x=0.455,
+                         y=1.13,
+                         yref='paper',
+                         align='left')
+                )
+
+            # Add the layout
             print("Start to update the layout")
             self.__fig.update_layout(
                 template='plotly_dark',
-                updatemenus=[
-                    dict(
-                        buttons=buttons_types,
-                        direction='down',
-                        pad={'r': 10, 't': 10},
-                        showactive=True,
-                        x=0.1,
-                        xanchor='left',
-                        y=1.15,
-                        yanchor='top',
-                        name='Plot Type: '
-                    ),
-                    dict(
-                        buttons=filter_buttons,
-                        direction='down',
-                        pad={'r': 10, 't': 10},
-                        showactive=True,
-                        x=0.5,
-                        xanchor='left',
-                        y=1.15,
-                        yanchor='top',
-                        name='Filters'
-
-                    ),
-
-                ],
-
-                # make text for the buttons to the side of them
-
-                annotations=[
-                    dict(text="Plot Types:", showarrow=False,
-                         x=0.024, y=1.13, yref="paper", align="left"),
-                    dict(text='Filters:', showarrow=False,
-                         x=0.455, y=1.13, yref='paper', align='left')
-                ],
+                updatemenus=updatemenus,
+                annotations=annotations,
                 scene=dict(
                     xaxis_title='X Axis',
                     yaxis_title='z Axis',
@@ -164,10 +184,7 @@ class ThreeDGraphs:
         except Exception as e:
             raise RuntimeError(f"Error creating the first plot: {e}")
 
-    def show(self):
+    def show(self, html_Name):
         self.__fig.show()
-        self.__fig.write_html("Spawn Signs.html")
-
-
-#"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+        self.__fig.write_html(html_Name)
 

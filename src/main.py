@@ -42,12 +42,6 @@ def getBannerData(filename):
         print(df.head())
         print(df.head(10))
 
-        df.replace(r"[]", "")
-
-        """
-        For new df logic, start at col 5 and append to a main list untill you get to <N/A>/the end 
-        """
-
         col_pat = []
         for _, row in df.iterrows():
             row_col_pat = []
@@ -199,7 +193,7 @@ def get_Sign_data(filename):
         print('Create new dataframe')
         # creates a new data frame to make everything nice and org
         new_df = pd.DataFrame(cleaned_data, dtype='string')
-        new_df.to_html("Cleaned Sign Data spawn.html")
+        #new_df.to_html("Cleaned Sign Data spawn.html")
 
 
         x = new_df['x']
@@ -229,8 +223,6 @@ def main():
     spawn_banners = 'FileslampBanners.csv'
     spawn_Signs = 'FileslampSignsV2.csv'
 
-    (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(spawn_banners)
 
     #sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(filename_signs)
 
@@ -267,21 +259,19 @@ def main():
 
     sign_data, sign_keys = sign_utils.unique_word_counter()
 
-    sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg)
+    #sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, large_DataSet=True)
 
-    sign_threeD_Graph.scatter_Plot()
-    #sign_threeD_Graph.add_Drop_Downs()
-    sign_threeD_Graph.show()
-    #sign_threeD_Graph.html('3d_Sign_plot_SpawnOW.html')
+   # sign_threeD_Graph.scatter_Plot()
+   # sign_threeD_Graph.show("SignsOW.html")
 
-    title = 'All Signs In 2b End 25k'
+    title = 'All Signs In 2b Spawn OW 10k'
     yLabel = 'Amount of Signs'
     xLabel = 'Name of Sign'
-    overall = ['The Rest', 'Empty Sign']
+    overall = ['Cody Signs', 'Empty Sign']
 
-    #signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
-    #signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
-    #signs_2dGraph.create_Percent_Pie_Chart(overall)
+    signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
+    signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
+    signs_2dGraph.create_Percent_Pie_Chart(overall)
 
 
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
@@ -302,7 +292,7 @@ def main():
     """
 
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(filename_banners)
+     banner_color_and_pat_list, banners_unique_names_only) = getBannerData(filename_banners)
 
     utils = Util(filename_banners, banner_names_list)
     banner_data, banner_keys = utils.unique_word_counter()

@@ -4,12 +4,14 @@ import plotly.graph_objs as go
 
 class ThreeDGraphs:
 
-    def __init__(self, x_cord, y_cord, z_cord, name, a_color, pat, unique_names, banners=False, large_DataSet=False):
+    def __init__(self, x_cord, y_cord, z_cord, name, a_color, unique_names, pat=None, banners=False,
+                 large_DataSet=False, include_pat_=False):
         self.__x, self.__y, self.__z = x_cord, y_cord, z_cord
-        self.__name, self.__color, self.__pat = name, a_color, pat
+        self.__name, self.__color = name, a_color
+        self.__pat = pat if pat is not None else ["None"] * len(x_cord)  # Handle None for pat
         self.__unique_names = unique_names
 
-        self.__hover_text = self.__generate_hover_text(banners)
+        self.__hover_text = self.__generate_hover_text(banners, include_pat=include_pat_)
         self.__fig = go.Figure()
 
         if not large_DataSet:
@@ -31,13 +33,17 @@ class ThreeDGraphs:
         else:
             self.__filtered_data = {'all': {}}
 
-    def __generate_hover_text(self, banners):
+    def __generate_hover_text(self, banners, include_pat):
         hover_template = (
-            lambda n, x, y, z, c, p: f"Msg: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Glow Ink: {c}<br>Sign Color: {p}"
+            lambda n, x, y, z, c,
+                   p: f"Msg: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Glow Ink: {c}<br>Sign Color: {p or 'None'}"
             if not banners else
-            lambda n, x, y, z, c, p: f"Name: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Color: {c}<br>Pat: {p}"
+            lambda n, x, y, z, c, p: f"Name: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Color: {c}<br>Pat: {p or 'None'}"
         )
-        return [hover_template(n, x, y, z, c, p) for n, x, y, z, c, p in zip(self.__name, self.__x, self.__y, self.__z, self.__color, self.__pat)]
+        return [
+            hover_template(n, x, y, z, c, p)
+            for n, x, y, z, c, p in zip(self.__name, self.__x, self.__y, self.__z, self.__color, self.__pat)
+        ]
 
     def scatter_Plot(self):
         try:

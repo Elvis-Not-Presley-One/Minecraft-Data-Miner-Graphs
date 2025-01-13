@@ -66,7 +66,7 @@ class TwoDGraphs:
         overall_labels = overall
         angle = -180 * overall_ratios[0]
         wedges, *_ = ax1.pie(overall_ratios, autopct='%1.1f%%', startangle=angle,
-                             labels=overall_labels)
+                            )
 
         plt.show()
 

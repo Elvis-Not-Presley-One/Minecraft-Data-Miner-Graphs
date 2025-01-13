@@ -42,6 +42,7 @@ class Util:
             else:
                 unique_words[words] = 1
         print('done')
+        print(unique_words)
 
         # outputs the keys and values associated with them
         return unique_words.values(), unique_words.keys()

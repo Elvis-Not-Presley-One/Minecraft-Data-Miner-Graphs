@@ -269,21 +269,27 @@ def main():
     xLabel = 'Name of Sign'
     overall = ['Cody Signs', 'Empty Sign']
 
-    signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
-    signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
-    signs_2dGraph.create_Percent_Pie_Chart(overall)
+    #signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
+    #signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
+    #signs_2dGraph.create_Percent_Pie_Chart(overall)
 
 
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_list, banner_pat_list, banners_unique_names_only) = getBannerData(spawn_banners)
+     banner_color_list, banners_unique_names_only) = getBannerData(spawn_banners)
 
     utils = Util(filename_banners, banner_names_list)
     banner_data, banner_keys = utils.unique_word_counter()
 
-    twoDGraph = TwoDGraphs(banner_data, banner_keys)
+    #twoDGraph = TwoDGraphs(banner_data, banner_keys)
 
-    twoDGraph.Create_Bar_Charts('Amount of Banner', 'Name of Banner', 'All Banner in End')
-    twoDGraph.create_Percent_Pie_Chart(['Nan', 'PHr Thomas'])
+    #twoDGraph.Create_Bar_Charts('Amount of Banner', 'Name of Banner', 'All Banner in End')
+    #twoDGraph.create_Percent_Pie_Chart([])
+
+    sign_threeD_Graph = ThreeDGraphs(banner_x_list, banner_y_list, banner_z_list, banner_names_list, banner_color_list, unique_names=banners_unique_names_only,
+                                     large_DataSet=False)
+
+    sign_threeD_Graph.scatter_Plot()
+    sign_threeD_Graph.show("BannersOW1.2.html")
 
     """
     =================================

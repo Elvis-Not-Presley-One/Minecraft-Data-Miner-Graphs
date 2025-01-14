@@ -34,10 +34,29 @@ def getBannerData(filename):
     :param filename: The filename you want to look for
     :return: lists of data i.e(x, y, z...)
     """
-
     try:
         pd.set_option('display.max_rows', None)
-        df = pd.read_csv(filename, on_bad_lines='skip', header=None, dtype='string')
+
+        with open(filename, 'r', encoding='Latin-1') as file:
+            lines = file.readlines()
+
+        modified_lines = []
+        for line in lines:
+            columns = line.strip().split(',')
+
+            if len(columns) < 22:
+                columns.extend(['<NA>'] * (22 - len(columns)))
+
+            modified_lines.append(','.join(columns))
+
+        with open('temp_modified_file.csv', 'w', encoding='Latin-1') as file:
+            file.writelines("\n".join(modified_lines))
+
+        df = pd.read_csv('temp_modified_file.csv',on_bad_lines='warn', header=None, dtype='string', encoding='Latin-1')
+
+        if len(df) < 22:
+            raise ValueError(f"The DataFrame has {len(df)} rows, but at least 22 rows are required.")
+
         print(df.info())
         print(df.head())
         print(df.head(10))
@@ -48,7 +67,7 @@ def getBannerData(filename):
 
             for col in range(5, len(row)):
                 cell = str(row[col])
-                if cell == '<NA>' or cell == 'nan':
+                if cell.startswith('<NA>') or cell.startswith('nan'):
                     continue
                 else:
                     row_col_pat.append(cell)
@@ -58,7 +77,7 @@ def getBannerData(filename):
         banner_x_cord = df[0]
         banner_y_cord = df[1]
         banner_z_cord = df[2]
-        banner_names = df[3].fillna('No-Name')
+        banner_names = df[3].fillna('No Name')
 
         cleaned_data = {
             "x": banner_x_cord,
@@ -69,7 +88,7 @@ def getBannerData(filename):
         }
 
         new_df = pd.DataFrame(cleaned_data, dtype='string')
-        new_df.to_html("Cleaned Banner Data spawn.html")
+        new_df.to_html("OW Cleaned Banner Data.html")
 
         x = new_df['x']
         y = new_df['y']
@@ -80,19 +99,34 @@ def getBannerData(filename):
         new_df.info()
 
     except Exception as e:
-        print(f"Failed to Create DataFrame {e}")
+        print(f"Failed to Create DataFrame: {e}")
         return None, None, None, None, None, None
 
-    return banner_x_cord.astype(int), banner_y_cord.astype(int), banner_z_cord.astype(int), name, color_and_Pattern, name.unique()
+    return banner_x_cord.astype(int), banner_y_cord.astype(int), banner_z_cord.astype(
+        int), name, color_and_Pattern, name.unique()
 
 
 def get_Sign_data(filename):
     # *NOTE Pandas is fucking up x y z cords
     # nvm found the issue
 
-    # create pandas dataframe
     try:
-        df = pd.read_csv(filename, header= None, on_bad_lines='skip', delimiter=',', dtype='string')
+        with open(filename, 'r', encoding='Latin-1') as file:
+            lines = file.readlines()
+
+        modified_lines = []
+        for line in lines:
+            columns = line.strip().split(',')
+
+            if len(columns) < 100:
+                columns.extend(['<NA>'] * (100 - len(columns)))
+
+            modified_lines.append(','.join(columns))
+
+        with open('temp_modified_file.csv', 'w', encoding='Latin-1') as file:
+            file.writelines("\n".join(modified_lines))
+
+        df = pd.read_csv('temp_modified_file.csv', header=None, dtype='string', encoding='Latin-1')
         print(df.head(10))  # Preview first few rows
         df.info()
         df.astype(str)
@@ -193,7 +227,7 @@ def get_Sign_data(filename):
         print('Create new dataframe')
         # creates a new data frame to make everything nice and org
         new_df = pd.DataFrame(cleaned_data, dtype='string')
-        #new_df.to_html("Cleaned Sign Data spawn.html")
+        new_df.to_html("Cleaned Sign Data OW.html")
 
 
         x = new_df['x']
@@ -223,55 +257,40 @@ def main():
     spawn_banners = 'FileslampBanners.csv'
     spawn_Signs = 'FileslampSignsV2.csv'
 
+    """
+    =====================
+           Signs
+    ====================
+    """
 
-    #sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(filename_signs)
+    #sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(spawn_Signs)
 
     #sign_utils = Util(filename_signs, msg)
 
+    #Create most words said from signs
     #sign_data, sign_keys = sign_utils.unique_word_counter()
 
-    #sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color)
+    #sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, sign_color,pat=glow, unique_names=unique_msg, large_DataSet=True)
 
     #sign_threeD_Graph.scatter_Plot()
-    #sign_threeD_Graph.add_Drop_Downs()
-    #sign_threeD_Graph.show()
-    #sign_threeD_Graph.html('3d_Sign_plot.html')
+    #sign_threeD_Graph.show('OW 3d_Sign_plot1.4.html')
 
     title = 'All Signs In 2b End 25k'
     yLabel = 'Amount of Signs'
     xLabel = 'Name of Sign'
-    overall = ['The Rest', 'Empty Sign']
+    overall = []
 
     #signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
     #signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
+    #signs_2dGraph.Create_non_log_bar(yLabel,xLabel,title)
     #signs_2dGraph.create_Percent_Pie_Chart(overall)
 
 
     """
     =====================
-    Spawn OW
+         Banners
     ====================
     """
-
-    sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(spawn_Signs)
-
-    sign_utils = Util(filename_signs, msg)
-
-    sign_data, sign_keys = sign_utils.unique_word_counter()
-
-    #sign_threeD_Graph = ThreeDGraphs(sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, large_DataSet=True)
-
-   # sign_threeD_Graph.scatter_Plot()
-   # sign_threeD_Graph.show("SignsOW.html")
-
-    title = 'All Signs In 2b Spawn OW 10k'
-    yLabel = 'Amount of Signs'
-    xLabel = 'Name of Sign'
-    overall = ['Cody Signs', 'Empty Sign']
-
-    #signs_2dGraph = TwoDGraphs(sign_data, sign_keys)
-    #signs_2dGraph.Create_Bar_Charts(yLabel,xLabel,title)
-    #signs_2dGraph.create_Percent_Pie_Chart(overall)
 
 
     (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
@@ -280,33 +299,18 @@ def main():
     utils = Util(filename_banners, banner_names_list)
     banner_data, banner_keys = utils.unique_word_counter()
 
-    #twoDGraph = TwoDGraphs(banner_data, banner_keys)
+    twoDGraph = TwoDGraphs(banner_data, banner_keys)
 
-    #twoDGraph.Create_Bar_Charts('Amount of Banner', 'Name of Banner', 'All Banner in End')
-    #twoDGraph.create_Percent_Pie_Chart([])
+    twoDGraph.Create_Bar_Charts('Amount of Banners', 'Name of Banner', 'All Banner in OW Spawn')
+    twoDGraph.Create_non_log_bar('Amount of Banners', 'Name of Banner', 'All Banner in OW Spawn')
+    twoDGraph.create_Percent_Pie_Chart(['NoName', 'PRThomass Banner', 'Rest'])
 
     sign_threeD_Graph = ThreeDGraphs(banner_x_list, banner_y_list, banner_z_list, banner_names_list, banner_color_list, unique_names=banners_unique_names_only,
                                      large_DataSet=False)
 
     sign_threeD_Graph.scatter_Plot()
-    sign_threeD_Graph.show("BannersOW1.2.html")
+    sign_threeD_Graph.show("Banners OW 1.2.html")
 
-    """
-    =================================
-    End Below
-    =================================
-    """
-
-    (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_and_pat_list, banners_unique_names_only) = getBannerData(filename_banners)
-
-    utils = Util(filename_banners, banner_names_list)
-    banner_data, banner_keys = utils.unique_word_counter()
-
-    twoDGraph = TwoDGraphs(banner_data, banner_keys)
-
-    twoDGraph.Create_Bar_Charts('Amount of Banner','Name of Banner', 'All Banner in End')
-    twoDGraph.create_Percent_Pie_Chart(['Nan','PHr Thomas'])
 
 
 

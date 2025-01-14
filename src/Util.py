@@ -35,14 +35,14 @@ class Util:
         """
 
         unique_words = {}
-
+        
+        #NOTE this only prints the msg not the words in the msg
         for words in self.__list:
             if words in unique_words:
                 unique_words[words] += 1
             else:
                 unique_words[words] = 1
         print('done')
-        print(unique_words)
 
         # outputs the keys and values associated with them
         return unique_words.values(), unique_words.keys()

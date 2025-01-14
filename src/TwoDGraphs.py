@@ -65,10 +65,32 @@ class TwoDGraphs:
         overall_ratios = percent_list
         overall_labels = overall
         angle = -180 * overall_ratios[0]
-        wedges, *_ = ax1.pie(overall_ratios, autopct='%1.1f%%', startangle=angle,
+        wedges, *_ = ax1.pie(overall_ratios, autopct='%1.1f%%', startangle=angle, #labels=overall_labels
                             )
 
         plt.show()
+
+    def Create_non_log_bar(self, yLabel, xLabel, title):
+        dic_keys = [str(key) for key in self.__keys]
+        dic_values = list(self.__data)
+
+        colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan']
+
+        try:
+            # For non log scaled data bar chart
+            plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
+            plt.ylabel(yLabel)
+            plt.xlabel(xLabel)
+            plt.title(title)
+            plt.xticks(rotation=45, ha='right', size=5)
+            plt.tight_layout()
+            plt.show()
+
+
+        except Exception as e:
+            raise RuntimeError(f"Error in creating non-log bar graph {e}")
+
+        return dic_keys, self.__data, dic_values
 
     def Create_Bar_Charts(self, yLabel, xLabel, title):
         """
@@ -81,8 +103,14 @@ class TwoDGraphs:
         dic_keys = [str(key) for key in self.__keys]
         dic_values = list(self.__data)
 
-        print(dic_keys)
-        print(dic_values)
+        dicts = {'Sign Name': dic_keys,
+                 'Amount of Signs': self.__data}
+
+        df = pd.DataFrame(dicts)
+        df.to_markdown()
+        df.to_csv('OW Banner Dic.csv')
+        display(df)
+
         # For log Scaled Data
         try:
             colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan']
@@ -98,23 +126,7 @@ class TwoDGraphs:
         except Exception as e:
             raise RuntimeError(f"Error Creating scaled bar graph {e}")
 
-        try:
-            # For non log scaled data bar chart
-            plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
-            plt.ylabel(yLabel)
-            plt.xlabel(xLabel)
-            plt.title(title)
-            plt.xticks(rotation=45, ha='right', size=5)
-            plt.tight_layout()
-            plt.show()
 
-            dicts = {'Banner Name': dic_keys,
-                     'Amount of Banners': self.__data}
-
-            df = pd.DataFrame(dicts)
-            display(df)
-        except Exception as e:
-            raise RuntimeError(f"Error in creating non-log bar graph {e}")
 
         return dic_keys, self.__data, dic_values
 

@@ -7,7 +7,7 @@
 
 
 Minecraft-Data-Miner-Graphs is a Python program that creates interactive visual graphs for data from CSV files with Minecraft data within. This program is an offshoot and specifically made for ```lawnguy1201/GoneAxolotl``` Minecraft region data miner, for Maxdog006's 25k End world download (wdl). Interactability and shareable graphs were the main priority of this program. Also, the graphs had to be able to be placed on websites with little hassle causing us to focus on making the graphs .HTML files.
-- https://github.com/lawnguy1201/GoneAxolotl
+- [The Data Miner](https://github.com/Elvis-Not-Presley-One/LostCassowary)
 
 We first considered making this program in ```Matlab```, but the Matlab file share system is atrocious, so we made the program in ```Python```, using mainly the Plotly API and Matplotlib API.
 

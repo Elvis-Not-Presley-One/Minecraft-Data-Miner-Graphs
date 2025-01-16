@@ -1,34 +1,37 @@
 from collections import defaultdict
 import numpy as np
 import plotly.graph_objs as go
+from streamlit import title
 
-class ThreeDGraphs:
+
+class ThreeDSigns:
     """
-    The ThreeDGraphs class creates 3d graphs using plotly api
+    the ThreeDSigns class creates 3d graphs to make life ez from using the other class
 
     Author: lawnguy
     """
+    def __init__(self, cody, large_DataSet=False):
+        #make a copy to not fuck up the data frame
+        self.__cody = cody.reset_index(drop=True).copy()
 
-    def __init__(self, x_cord, y_cord, z_cord, name, a_color, unique_names, pat=None, banners=False,
-                 large_DataSet=False, include_pat_=False):
+        self.__x = self.__cody['x'].astype(int)
+        self.__z = self.__cody['z'].astype(int)
+        self.__y = self.__cody['y'].astype(int)
+        self.__name = self.__cody['mgs']
+        self.__glow = self.__cody['Glow Ink']
+        self.__colors = self.__cody['Sign Color']
+        self.__unique_names = self.__cody['mgs'].unique()
 
-        self.__x, self.__y, self.__z = x_cord, y_cord, z_cord
-        self.__name, self.__color = name, a_color
-
-        #if were not using pat change it so no error
-        self.__pat = pat if pat is not None else ["None"] * len(x_cord)
-        self.__unique_names = unique_names
-
-        self.__hover_text = self.__generate_hover_text(banners, include_pat=include_pat_)
+        self.__hover_text = self.__generate_hover_text()
         self.__fig = go.Figure()
 
-        # large dataset we dont want to use filters to not bloat up the file size
+        # we dont want to bloat the file if its big
         if not large_DataSet:
             self.__filtered_data = {
                 unique_name: {
-                    'x': [self.__x[i] for i, name in enumerate(self.__name) if name == unique_name],
-                    'y': [self.__z[i] for i, name in enumerate(self.__name) if name == unique_name],
-                    'z': [self.__y[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'x': [self.__x.iloc[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'y': [self.__z.iloc[i] for i, name in enumerate(self.__name) if name == unique_name],
+                    'z': [self.__y.iloc[i] for i, name in enumerate(self.__name) if name == unique_name],
                     'text': [self.__hover_text[i] for i, name in enumerate(self.__name) if name == unique_name]
                 }
                 for unique_name in self.__unique_names
@@ -42,35 +45,29 @@ class ThreeDGraphs:
         else:
             self.__filtered_data = {'all': {}}
 
-    def __generate_hover_text(self, banners, include_pat):
+    def __generate_hover_text(self):
         """
-        The __generate_hover_text() function is a helper function to create the hovertext
-        :param banners: bool values should be removed
-        :param include_pat: should be removed bool value
-        :return: the hover template for later on
+        __generate_hover_text() function is a helper function for gen the hover text
+        :return: the filed template for the hover text
         """
-        #genral template used for the hovertext for later on pretty optimized
         hover_template = (
-            lambda n, x, y, z, c,
-                   p: f"Msg: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Glow Ink: {c}<br>Sign Color: {p or 'None'}"
-            if not banners else
-            lambda n, x, y, z, c, p: f"Name: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Color: {c}<br>Pat: {p or 'None'}"
+            lambda n, x, y, z, c, p: f"Msg: {n}<br>X: {x}<br>Y: {y}<br>Z: {z}<br>Glow Ink: {c}<br>Sign Color: {p or 'None'}"
         )
         return [
             hover_template(n, x, y, z, c, p)
-            for n, x, y, z, c, p in zip(self.__name, self.__x, self.__y, self.__z, self.__color, self.__pat)
+            for n, x, y, z, c, p in zip(self.__name, self.__x, self.__y, self.__z, self.__glow, self.__colors)
         ]
 
-    def scatter_Plot(self):
+    def scatter_plot(self):
         """
-        The scatter_plot() function creates the scatter plot
-        :return:
+        the scatter_plot() function creates a 3d scatter plot
+        :return: None
         """
         try:
             print('Start of the Scatter Plot')
             self.__fig = go.Figure(data=[go.Scatter3d(
                 x=self.__x,
-                #y and z are switched to make the graph less of a mind fuck to look at
+                #z and y switched to make sure not to make graph nice
                 y=self.__z,
                 z=self.__y,
                 mode='markers',
@@ -89,7 +86,7 @@ class ThreeDGraphs:
                 )
             )])
 
-            print("filter buttons begin")
+            print("Filter buttons begin")
 
             # Add filter buttons only if not a large dataset
             updatemenus = []
@@ -135,12 +132,12 @@ class ThreeDGraphs:
                     )
                 )
 
-            #add the buttons to the graph
+            # add all the buttons
             print("Start adding buttons to the Graph")
             buttons_types = [
                 dict(
                     args=['type', 'scatter3d'],
-                    label='3d-Plot',
+                    label='3D Plot',
                     method='restyle'
                 ),
                 dict(
@@ -174,7 +171,7 @@ class ThreeDGraphs:
                 )
             )
 
-            #add the text to the side
+            # add nice text on the side
             annotations = [
                 dict(text="Plot Types:",
                      showarrow=False,
@@ -183,7 +180,8 @@ class ThreeDGraphs:
                      yref="paper",
                      align="left")
             ]
-            #if we have the filter buttons we need to add this text to the side
+
+            # if we have filtered data we want to add the text could be a better way of doing this check
             if self.__filtered_data.get('all'):
                 annotations.append(
                     dict(text='Filters:',
@@ -202,8 +200,8 @@ class ThreeDGraphs:
                 annotations=annotations,
                 scene=dict(
                     xaxis_title='X Axis',
-                    yaxis_title='z Axis',
-                    zaxis_title='y Axis',
+                    yaxis_title='Z Axis',
+                    zaxis_title='Y Axis',
                 ),
                 width=1200,
                 height=800,
@@ -211,13 +209,13 @@ class ThreeDGraphs:
             )
             print("Done with graph")
         except Exception as e:
-            raise RuntimeError(f"Error creating the first plot: {e}")
+            raise RuntimeError(f"Error creating the scatter plot: {e}")
 
-    def show(self, html_Name=None):
+    def show(self, html_name=None):
         """
-        the show function shows the graph and creates a html file
-        :param html_Name: the name of the html
+        The show function shows and creates an html of the file
+        :param html_name: the html file name
         :return: None
         """
         self.__fig.show()
-        self.__fig.write_html(html_Name)
+        self.__fig.write_html(html_name)

@@ -1,6 +1,11 @@
 import pandas as pd
 
 class Util:
+    """
+    The Util class is for the util functions
+
+    Author: lawnguy
+    """
 
     def __init__(self, filename = '', msg_List = [], data_list = []):
         """
@@ -45,7 +50,7 @@ class Util:
         print('done')
 
         # outputs the keys and values associated with them
-        return unique_words.values(), unique_words.keys()
+        return list(unique_words.values()), list(unique_words.keys())
 
     def display_Info(self):
         """
@@ -60,4 +65,3 @@ class Util:
         print(data.tail())
         print(data.shape)
         print(data.info())
-

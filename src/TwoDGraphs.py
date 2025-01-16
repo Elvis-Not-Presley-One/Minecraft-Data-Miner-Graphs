@@ -1,14 +1,22 @@
+from tempfile import template
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from IPython.display import display
 from Util import Util
 import plotly.graph_objs as go
-
+import plotly.express as px
 
 
 class TwoDGraphs:
+    """
+    The TwoDGraphs class creates 2d graphs
+    Uses mostly matplotlib Not the best use the plotly one
 
-    def __init__(self, list_of_data, keys, x_cord=None, y_cord=None, name=None, unique_name=None):
+    Author: lawnguy
+    """
+
+    def __init__(self, list_of_data=None, keys=None, x_cord=None, y_cord=None, name=None, unique_name=None):
         """
         this is the con for the TwoDGraphs class
 
@@ -23,19 +31,55 @@ class TwoDGraphs:
         self.__name = name
         self.__unique = unique_name
 
-        if self.__x is not None:
-            self.__hover_text = [
-                (f"<br>X:{self.__x[i]}<br>Z: {self.__y[i]}<br>Biome:,"
-                 f" {self.__name[i]}")
-                for i in range(len(self.__x))
-            ]
 
         self.__fig = go.Figure()
+
+
+    # NOTE* this is the best bar chart choice since its most interactive
+    def create_plotly_bar_chart(self, html, title, x_text_list, y_text_list):
+        """
+        Create a bar chart with Plotly and add custom text annotations for x and y axes
+
+        Args:
+            html (str): The file name for saving the HTML output
+            title (str): The title of the chart
+            x_text_list (list): List of labels for x-axis values
+            y_text_list (list): List of text annotations for y-axis values
+        """
+        try:
+            #create a bar chart
+            fig = px.bar(
+                x=self.__keys,
+                y=self.__data,
+                title=title
+            )
+
+            fig.update_traces(
+                marker=dict(color='lightblue'),
+                text=y_text_list,
+                textposition='outside'
+            )
+
+            if x_text_list:
+                fig.update_layout(
+                    template='plotly_dark',
+                    xaxis=dict(
+                        tickvals=list(range(len(self.__keys))),
+                        ticktext=x_text_list
+                    )
+                )
+
+            # Show and create html
+            fig.show()
+            fig.write_html(html)
+
+        except Exception as e:
+            raise RuntimeError(f"Error creating the bar chart: {e}")
 
     def create_Percent_Pie_Chart(self, overall):
         """
         the create_Percent_Pie_Chart creates a percent pie chart
-        :return: Nothing
+        :return: None
         """
 
         #create a util obk
@@ -71,13 +115,22 @@ class TwoDGraphs:
         plt.show()
 
     def Create_non_log_bar(self, yLabel, xLabel, title):
+        """
+        The Create_non_log_bar function creates a non log bar chart
+        :param yLabel: the label for the y
+        :param xLabel: the label for the x
+        :param title: the title
+        :return:
+        dic_keys: the list of keys from the dic
+        self.__data: the data from the input for some reason
+        dic_values: the list of the vlaues
+        """
         dic_keys = [str(key) for key in self.__keys]
         dic_values = list(self.__data)
 
         colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan']
 
         try:
-            # For non log scaled data bar chart
             plt.bar(dic_keys, dic_values, color=colors[:len(dic_keys)])
             plt.ylabel(yLabel)
             plt.xlabel(xLabel)
@@ -126,133 +179,4 @@ class TwoDGraphs:
         except Exception as e:
             raise RuntimeError(f"Error Creating scaled bar graph {e}")
 
-
-
         return dic_keys, self.__data, dic_values
-
-    def twoD_Scatter_Plot(self):
-        try:
-            x = self.__x
-            z = self.__y
-
-            # creates title marker type color and text with a scale
-            self.__fig = go.Figure(data=[go.Scatter(
-                x=x,
-                z=z,
-                mode='markers',
-                text=self.__hover_text,
-                hoverinfo="text",
-                marker=dict(
-                    size=8,
-                    colorscale='rdbu',
-                    opacity=0.8,
-
-
-                )
-            )])
-        except Exception as e:
-            raise RuntimeError(f"Error creating the first plot: {e}")
-
-    def add_drop_downs(self):
-        try:
-            filter_buttons = [
-                dict(
-                    args=[{
-
-                        'x': [[self.__x[i] for i in range(len(self.__name)) if self.__name[i] == unique_name]],
-                        'z': [[self.__y[i] for i in range(len(self.__name)) if self.__name[i] == unique_name]],
-                        'text': [[self.__hover_text[i] for i in range(len(self.__name)) if self.__name[i] == unique_name]]
-                    }],
-
-                    label=unique_name,
-                    method="update"
-                )
-                    for unique_name in self.__unique
-            ]
-
-            filter_buttons.insert(0, dict(
-                args=[{
-                    'x': [self.__x],
-                    'z': [self.__y],
-                    'text': [self.__hover_text]
-                }],
-                label='all',
-                method='update'
-
-            ))
-
-
-
-            # create a drop down with the button name and what it does
-            buttons_types = [
-
-                dict(
-                    args=['type', 'scatter2d'],
-                    label='2d-Plot',
-                    method='restyle'
-                ),
-                dict(
-                    args=['type', 'heatmap'],
-                    label='heatmap',
-                    method='restyle'
-                )
-
-            ]
-
-            # makes buttons do shit, and can style them here
-            self.__fig.update_layout(
-                template='plotly_dark',
-                updatemenus=[
-                    dict(
-                        buttons=buttons_types,
-                        direction='down',
-                        pad={'r': 10, 't': 10},
-                        showactive=True,
-                        x=0.1,
-                        xanchor='left',
-                        y=1.15,
-                        yanchor='top',
-                        name='Plot Type: '
-                    ),
-                    dict(
-                        buttons=filter_buttons,
-                        direction='down',
-                        pad={'r': 10, 't': 10},
-                        showactive=True,
-                        x=0.5,
-                        xanchor='left',
-                        y=1.15,
-                        yanchor='top',
-                        name='Filters'
-
-                    ),
-
-                ],
-
-                # make text for the buttons to the side of them
-                annotations=[
-                    dict(text="Plot Types:", showarrow=False,
-                         x=0.024, y=1.13, yref="paper", align="left"),
-                    dict(text='Filters:', showarrow=False,
-                         x=0.455, y=1.13, yref='paper', align='left')
-                ],
-                scene=dict(
-                    xaxis_title='X Axis',
-                    zaxis_title='z Axis',
-                ),
-                width=1200,
-                height=800,
-                margin=dict(r=60, l=60, b=60, t=60)
-            )
-        except Exception as e:
-            raise RuntimeError(f"Error with adding dropdowns: {e}" )
-
-    def show(self):
-        self.__fig.show()
-
-    def html(self, name_of_file):
-
-        try:
-            self.__fig.write_html(name_of_file)
-        except Exception as e:
-            raise IOError(f"Error Saving as Html '{name_of_file}'{e}")

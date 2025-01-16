@@ -6,17 +6,24 @@ import datashader.transfer_functions as tf
 import matplotlib.pyplot as plt
 from colorcet import glasbey_category10
 
-
-
 class Biomes:
     """
+    Biomes class is to work with the large biomes files and data to create graphs
+
     NOTE* This Class does not work properly
     Needs work on, at this point the biomes bs is not working well for me
+
+    Author lawnguy
     """
     def __init__(self, csv_file, db_file="data.db"):
         self.csv_file = csv_file
         self.db_file = db_file
+
     def load_csv_to_sqlite(self):
+        """
+        the load_csv_to_sqlite is meant to create a sqlite db
+        :return:
+        """
         if not os.path.exists(self.csv_file):
             raise FileNotFoundError(f"CSV file {self.csv_file} does not exist.")
 
@@ -31,6 +38,10 @@ class Biomes:
             connection.close()
 
     def fetch_all_data(self):
+        """
+        the fetch_all_data is a funciton to get teh data that you are looking for
+        :return:
+        """
         connection = sqlite3.connect(self.db_file)
         try:
             query = "SELECT x_coordinate, z_coordinate, biome FROM biomes"
@@ -39,6 +50,13 @@ class Biomes:
             connection.close()
 
     def generate_datashader_image(self, output_image):
+        """
+        generate_datashader_image funtion is used to creat a datashader image to help handle the large
+        amount of data fast and better then plotly
+
+        :param output_image: the name of the image
+        :return:
+        """
         print("Fetching data from SQLite...")
         df = self.fetch_all_data()
 
@@ -61,23 +79,21 @@ class Biomes:
         import plotly.graph_objects as go
         from PIL import Image
 
-        # Load the Datashader image
         img = Image.open(output_image)
 
-        # Create a blank Plotly figure
         fig = go.Figure()
 
-        # Overlay the rasterized image
+        #overlay the image
         fig.add_trace(go.Image(z=img))
 
-        # Customize layout for interactivity
         fig.update_layout(
             title="Biome Distribution with Datashader",
             xaxis=dict(title="X Coordinate"),
             yaxis=dict(title="Z Coordinate"),
         )
 
-        # Save and show
         fig.write_html(output_html)
         fig.show()
+
+        #debug
         print(f"Plotly figure saved to {output_html}")

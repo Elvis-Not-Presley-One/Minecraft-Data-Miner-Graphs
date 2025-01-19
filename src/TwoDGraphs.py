@@ -13,7 +13,7 @@ class TwoDGraphs:
     The TwoDGraphs class creates 2d graphs
     Uses mostly matplotlib Not the best use the plotly one
 
-    Author: lawnguy
+    Author: Elvis
     """
 
     def __init__(self, list_of_data=None, keys=None, x_cord=None, y_cord=None, name=None, unique_name=None):

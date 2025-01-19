@@ -2,7 +2,7 @@
 This program is to create classes and functions to visualize the data from the
 Goneax the minecraft data miner
 
-Author: lawnguy
+Author: Elvis
 """
 
 import pandas as pd

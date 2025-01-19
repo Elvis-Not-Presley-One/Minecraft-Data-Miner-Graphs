@@ -6,7 +6,7 @@ class ThreeDGraphs:
     """
     The ThreeDGraphs class creates 3d graphs using plotly api
 
-    Author: lawnguy
+    Author: Elvis
     """
 
     def __init__(self, x_cord, y_cord, z_cord, name, a_color, unique_names, pat=None, banners=False,

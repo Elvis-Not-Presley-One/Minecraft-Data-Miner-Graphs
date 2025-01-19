@@ -8,7 +8,7 @@ class ThreeDSigns:
     """
     the ThreeDSigns class creates 3d graphs to make life ez from using the other class
 
-    Author: lawnguy
+    Author: Elvis
     """
     def __init__(self, cody, large_DataSet=False):
         #make a copy to not fuck up the data frame

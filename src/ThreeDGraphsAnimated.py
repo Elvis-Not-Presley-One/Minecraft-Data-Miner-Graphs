@@ -5,7 +5,7 @@ class ThreeDGraphsAnimated:
     """
     The ThreeDGraphsAnimated graph class creates the 3d animated graphs
 
-    Author: lawnguy
+    Author: Elvis
     """
     def __init__(self, data, large_dataset=False):
         """

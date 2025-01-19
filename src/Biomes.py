@@ -13,7 +13,7 @@ class Biomes:
     NOTE* This Class does not work properly
     Needs work on, at this point the biomes bs is not working well for me
 
-    Author lawnguy
+    Author Elvis
     """
     def __init__(self, csv_file, db_file="data.db"):
         self.csv_file = csv_file

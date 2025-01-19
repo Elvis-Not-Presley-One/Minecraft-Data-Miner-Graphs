@@ -4,7 +4,7 @@ class Util:
     """
     The Util class is for the util functions
 
-    Author: lawnguy
+    Author: Elvis
     """
 
     def __init__(self, filename = '', msg_List = [], data_list = []):

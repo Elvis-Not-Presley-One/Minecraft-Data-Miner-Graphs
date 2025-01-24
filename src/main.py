@@ -7,12 +7,17 @@ Author: Elvis
 
 import pandas as pd
 import re
+import plotly.express as px
+from pandocfilters import Header
 
 from ThreeDSigns import ThreeDSigns
 from ThreeDGraphsAnimated import ThreeDGraphsAnimated
+from ThreeDGraphs import ThreeDGraphs
 from TwoDGraphs import TwoDGraphs
 from Util import Util
-
+from Spawners import Spawners
+import plotly.graph_objs as go
+from Shulkers import Shulkers as sh
 
 def getBannerData(filename):
     """
@@ -138,8 +143,8 @@ def get_Sign_data(filename):
         for line in lines:
             columns = line.strip().split(',')
 
-            if len(columns) < 100:
-                columns.extend(['<NA>'] * (100 - len(columns)))
+            if len(columns) < 150:
+                columns.extend(['<NA>'] * (150 - len(columns)))
 
             modified_lines.append(','.join(columns))
 
@@ -259,6 +264,10 @@ def get_Sign_data(filename):
         glow = new_df['Glow Ink']
         color = new_df['Sign Color']
 
+        a = Util(msg_List=msg)
+        a.unique_word_dic('Most writen words.csv')
+
+
         new_df.info()
     except Exception as e:
         print(f"Error: {e}")
@@ -285,16 +294,33 @@ def get_Cody_Signs_sorted(df):
     cody = df_sorted[df_sorted['mgs'].str.contains('codysmile11', na=False)]
 
     print(cody)
-    cody.to_html('Cody_Signs_Sorted OW.html')
+    cody.to_html('100k Cody_Signs_Sorted.html')
 
     #create animated graph
-    threeD = ThreeDGraphsAnimated(cody, large_dataset=False)
+    threeD = ThreeDGraphsAnimated(cody, large_dataset=True)
     threeD.create_animation()
-    threeD.show('End 3d Animated Cody Signs Accumulative.html')
+    threeD.show('100k 3d Animated Cody Signs.html')
 
     sign = ThreeDSigns(cody)
     sign.scatter_plot()
-    sign.show('Only Cody Signs End.html')
+    sign.show('Only Cody Signs 100k.html')
+
+
+def get_spawner_info(filename):
+    pd.set_option('display.max_rows', None)
+    df = pd.read_csv(filename, header=None, names=['x', 'y', 'z', 'delay'], on_bad_lines='skip')
+
+    spawner = Spawners(df)
+    spawner.create_plot()
+    spawner.show('test.html')
+
+def get_Shulkers(filename):
+    pd.set_option('display.max_rows', None)
+    df = pd.read_csv(filename, header=None, names=['x', 'y', 'z', 'Name', 'id'], on_bad_lines='skip')
+
+    graph = sh(df)
+    graph.create_plot()
+    graph.show("50k Shulkers.html")
 
 def main():
     """
@@ -307,7 +333,9 @@ def main():
     filename_Biome = 'D:/FilesBiomes.csv'
     filename_test = 'test.csv'
     spawn_banners = 'FileslampBanners.csv'
-    spawn_Signs = 'FileslampSignsV2.csv'
+    spawn_Signs = 'FilesSignsV2.csv'
+    spawn_spawners = 'FilesSpawners.csv'
+    spawn_shulker = 'FilesShulkers.csv'
 
     """
     =====================
@@ -315,25 +343,27 @@ def main():
     ====================
     """
 
-    #df, sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(spawn_Signs)
+    #get_spawner_info(spawn_spawners)
+
+    #get_Shulkers(spawn_shulker)
+
+    df, sign_x, sign_y, sign_z, msg, glow, sign_color, unique_msg, unique_glow, unique_color = get_Sign_data(spawn_Signs)
 
     #get_Cody_Signs_sorted(df)
 
-
-
-    #sign_utils_color = Util(filename_signs, msg)
+    #sign_utils_color = Util(filename_signs, sign_color)
     #sign_data_msg, sign_keys_msg = sign_utils_color.unique_word_counter()
 
 
-    #glows = TwoDGraphs(sign_data_msg, sign_keys_msg)
-    #glows.create_plotly_bar_chart('OW_banners_name_Bar.html', "Amount of Colors Signs Vs. Non-Colored Signs", sign_keys_msg, sign_data_msg)
+   # glows = TwoDGraphs(sign_data_msg, sign_keys_msg)
+   # glows.create_plotly_bar_chart('100k_banners_name_Bar.html', "Amount of Colors Signs Vs. Non-Colored Signs", sign_keys_msg, sign_data_msg)
 
     #sign_utils_glow = Util(filename_signs, glow.astype(str))
     #sign_data_glow, sign_keys_glow = sign_utils_glow.unique_word_counter()
 
     #color = TwoDGraphs(sign_data_glow, sign_keys_glow)
-    #color.create_plotly_bar_chart('End_Signs_glow_Bar.html', "Amount of Glow Ink Signs Vs. Non-Glow Ink Signs",
-                                 #sign_keys_glow, sign_data_glow)
+    #color.create_plotly_bar_chart('100k_Signs_glow_Bar.html', "Amount of Glow Ink Signs Vs. Non-Glow Ink Signs",
+                               #  sign_keys_glow, sign_data_glow)
 
     #Create most words said from signs
     #sign_data, sign_keys = sign_utils.unique_word_counter()
@@ -361,15 +391,15 @@ def main():
     """
 
 
-    (banner_x_list, banner_y_list, banner_z_list, banner_names_list,
-     banner_color_list, banners_unique_names_only) = getBannerData(filename_banners)
+    #(banner_x_list, banner_y_list, banner_z_list, banner_names_list,
+     #banner_color_list, banners_unique_names_only) = getBannerData(filename_banners)
 
-    sign_utils_color = Util(filename_signs, banner_color_list)
-    sign_data_msg, sign_keys_msg = sign_utils_color.unique_word_counter()
+    #sign_utils_color = Util(filename_signs, banner_color_list)
+    #sign_data_msg, sign_keys_msg = sign_utils_color.unique_word_counter()
 
-    glows = TwoDGraphs(sign_data_msg, sign_keys_msg)
-    glows.create_plotly_bar_chart('End_banners_color_pat_Bar.html', "Amount of Colors Signs Vs. Non-Colored Signs",
-                                  sign_keys_msg, sign_data_msg)
+    #glows = TwoDGraphs(sign_data_msg, sign_keys_msg)
+    #glows.create_plotly_bar_chart('End_banners_color_pat_Bar.html', "Amount of Colors Signs Vs. Non-Colored Signs",
+                                  #sign_keys_msg, sign_data_msg)
 
     #utils = Util(filename_banners, banner_names_list)
     #banner_data, banner_keys = utils.unique_word_counter()

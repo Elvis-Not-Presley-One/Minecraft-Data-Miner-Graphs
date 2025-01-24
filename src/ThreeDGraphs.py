@@ -9,7 +9,7 @@ class ThreeDGraphs:
     Author: Elvis
     """
 
-    def __init__(self, x_cord, y_cord, z_cord, name, a_color, unique_names, pat=None, banners=False,
+    def __init__(self, x_cord, y_cord, z_cord, name, a_color, unique_names=None, pat=None, banners=False,
                  large_DataSet=False, include_pat_=False):
 
         self.__x, self.__y, self.__z = x_cord, y_cord, z_cord

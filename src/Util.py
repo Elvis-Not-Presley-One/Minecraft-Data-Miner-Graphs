@@ -1,3 +1,6 @@
+import csv
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 import pandas as pd
 
 class Util:
@@ -48,6 +51,51 @@ class Util:
             else:
                 unique_words[words] = 1
         print('done')
+
+
+        # outputs the keys and values associated with them
+        return list(unique_words.values()), list(unique_words.keys())
+
+    def unique_word_dic(self, csvname, wordcloud=False):
+        """
+        the unique_word_counter creates an dictionary of all unique words and how many times
+        the word was said then separates them into its list of keys and values
+        :return: a list of values and keys
+        """
+
+        unique_words = {}
+        msg = " ".join(self.__list).split()
+        # NOTE this only prints the msg not the words in the msg
+        for words in msg:
+            if words in unique_words:
+                unique_words[words] += 1
+            else:
+                unique_words[words] = 1
+        print('done')
+        print(unique_words)
+
+        with open(csvname, mode='w', newline='', encoding='Latin-1') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Word', 'Count'])  # CSV headers
+
+            for word, count in unique_words.items():
+                writer.writerow([word, count])
+
+        print('CSV file created successfully')
+
+        if not wordcloud:
+            plt.subplots(figsize=(8, 8))
+
+            wordcloud = WordCloud(
+                background_color='white',
+                width=512,
+                height=384
+
+            ).generate_from_frequencies(unique_words)
+            plt.imshow(wordcloud)
+            plt.axis('off')
+            plt.savefig('Plotly-World_Cloud.png')
+            plt.show()
 
         # outputs the keys and values associated with them
         return list(unique_words.values()), list(unique_words.keys())

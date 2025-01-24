@@ -85,7 +85,7 @@ class ThreeDGraphsAnimated:
                 margin=dict(r=60, l=60, b=60, t=60),
                 annotations=[
                     dict(
-                        x=0.5, y=1.1, xref="paper", yref="paper",
+                        x=0.5, y=-0.2, xref="paper", yref="paper",
                         text=f"Date: {initial_date.strftime('%Y-%m-%d')}",
                         showarrow=False,
                         font=dict(size=14, color="white")

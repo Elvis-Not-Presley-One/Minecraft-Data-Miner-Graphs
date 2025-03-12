@@ -23,13 +23,18 @@ We ran into many problems and challenges throughout the development of the progr
 
 # Features
 - Create 3d Graphs **(Interactive)**
+  - ![9gwzfg](https://github.com/user-attachments/assets/412d2832-d557-498a-8838-5d523fa62f1b)
 - Create 3d Animated Graphs **(Interactive)**
   - ![9gwzfg](https://github.com/user-attachments/assets/6d880326-52ba-4712-8892-222d4813375c)
 - Create 2d Graphs **(Interactive)**
+  - ![Screenshot_2025-01-13_191819](https://github.com/user-attachments/assets/05a5f454-4315-49e8-92e1-85f44812e4ad)
 - Create Heatmaps **(Interactive)**
+  - ![newplot](https://github.com/user-attachments/assets/ab2ea884-5079-4370-b914-ed2490cc7536)
 - Create Mesh Graphs **(Interactive)**
+  - ![newplot (2)](https://github.com/user-attachments/assets/a0d63cc6-306e-4dff-8591-c910043371cc)
 - Create Pi Charts Based On Percentage
 - Create Bar Charts **(Interactive only for Plotly one)**
+  - ![newplot (3)](https://github.com/user-attachments/assets/a3d4d81a-121d-4fc3-938d-c1310e3e4c49)
 - Find How Many Unique Items There are
 - Count How Many Times a Unique Item was placed
 - Create .html Files For The Graphs
